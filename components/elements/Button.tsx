@@ -1,5 +1,6 @@
 'use client'
 
+import { cn } from '@/lib/shadcn'
 import React, { forwardRef, ButtonHTMLAttributes, useMemo } from 'react'
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -13,12 +14,12 @@ const Button = forwardRef<HTMLButtonElement, Props>(({ className, theme, onClick
   const bg = useMemo(() => {
     if (noInput) return 'bg-yellow-100'
     if (theme === 'transparent') return 'bg-transparent'
-    if (theme === 'onit') return 'bg-transparent hover:bg-neutral-800'
-    return 'bg-neutral-950 hover:bg-neutral-800'
+    if (theme === 'onit') return 'bg-transparent hover:bg-primary-800'
+    return 'bg-primary-950 hover:bg-primary-800'
   }, [theme, noInput])
 
   const border = useMemo(() => {
-    if (theme === 'transparent') return 'border-2 border-neutral-800 hover:border-neutral-700'
+    if (theme === 'transparent') return 'border-2 border-primary-800 hover:border-primary-700'
     if (theme === 'onit') return 'py-[10px]'
     return 'border-2 border-transparent'
   }, [theme])
@@ -29,10 +30,10 @@ const Button = forwardRef<HTMLButtonElement, Props>(({ className, theme, onClick
     return ''
   }, [theme, noInput])
 
-  return <button onClick={onClick} ref={ref} {...props} className={`
+  return <button onClick={onClick} ref={ref} {...props} className={cn(`
     px-2 rounded-primary whitespace-nowrap
-    ${border} ${bg} ${animate}
-    ${className}`}>
+    disabled:bg-primary-900 disabled:text-primary-600`, 
+    border, bg, animate, className)}>
     {children}
   </button>
 })
