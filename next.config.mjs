@@ -18,7 +18,8 @@ const nextConfig = {
     WALLETCONNECT_PROJECT_ID: process.env.WALLETCONNECT_PROJECT_ID,
     SMOL_ASSETS_URL: process.env.SMOL_ASSETS_URL,
     TESTNET_ID: process.env.TESTNET_ID,
-    TESTNET_URL: process.env.TESTNET_URL
+    TESTNET_URL: process.env.TESTNET_URL,
+    YDAEMON_URL: process.env.YDAEMON_URL,
   }
 };
 

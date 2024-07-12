@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  darkTheme,
   getDefaultConfig,
   midnightTheme,
   RainbowKitProvider,
@@ -23,10 +22,8 @@ import {
 import colors from 'tailwindcss/colors'
 import { mainnet } from 'viem/chains'
 
-const DEV = process.env.NODE_ENV === 'development'
-
 const testnet = Object.assign({}, mainnet, {
-  'id': process.env.TESTNET_ID ?? 1337,
+  'id': parseInt(process.env.TESTNET_ID ?? '1337'),
   'rpcUrls': {
     'default': {
       'http': [process.env.TESTNET_URL ?? 'http://localhost:8545']
@@ -34,7 +31,7 @@ const testnet = Object.assign({}, mainnet, {
   }
 })
 
-const chains = DEV ? [mainnet, testnet] : [mainnet]
+const chains = [testnet]
 
 const config = getDefaultConfig({
   appName: process.env.WALLETCONNECT_PROJECT_NAME ?? 'appName',

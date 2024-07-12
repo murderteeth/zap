@@ -3,10 +3,12 @@
 import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import Button from '../elements/Button'
-import { Token } from './tokens'
+import { Token, TOKENS } from './tokens'
 import { BsChevronDown } from 'react-icons/bs'
 import { useMemo } from 'react'
 import { cn } from '@/lib/shadcn'
+import useBalances from './useBalances'
+import { fTokens } from '@/lib/format'
 
 export default function InputPanel({
   mode,
@@ -27,11 +29,13 @@ export default function InputPanel({
     return cn(`text-sm`, disabled ? 'text-primary-600' : 'text-primary-400')
   }, [disabled])
 
+  const { getBalance } = useBalances({ tokens: TOKENS })
+  const balance = useMemo(() => getBalance(selected), [getBalance, selected])
+
   return <div className={`group
     px-4 py-6 bg-primary-900 rounded-primary
     flex flex-col justify-center gap-3
-    border border-transparent focus-within:border-primary-500
-    `}>
+    border border-transparent focus-within:border-primary-500`}>
     <div className={labelClassName}>
       {mode === 'in' ? 'Zap in' : 'Zap out'}
     </div>
@@ -55,7 +59,7 @@ export default function InputPanel({
         <div className="w-[32px] h-[32px]">
           <Image
             className={disabled ? 'opacity-20' : ''}
-            src={`/api/icon/token/1/${selected.address}`}
+            src={selected.icon}
             alt={selected.symbol}
             width={32}
             height={32} />
@@ -69,7 +73,7 @@ export default function InputPanel({
     <div className={cn(labelClassName, `flex items-center justify-between text-sm`)}>
       <div className="font-mono">$0.00</div>
       <div className="flex items-center gap-2">
-        <div>Balance: <span className="font-mono">0.0</span></div>
+        <div>Balance: <span className="font-mono">{fTokens(balance.balance, balance.decimals)}</span></div>
         {mode === 'in' && <Button disabled={disabled} className="px-2 py-1 text-xs">MAX</Button>}
       </div>
     </div>
