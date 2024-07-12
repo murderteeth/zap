@@ -3,11 +3,12 @@
 import Image from 'next/image'
 import Button from '../elements/Button'
 import { ScrollArea } from '../shadcn/scroll-area'
-import { Token, TOKENS } from './tokens'
+import { INPUTS, OUTPUTS, Token, TOKENS } from './tokens'
 import useBalances from './useBalances'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { fTokens, fUSD } from '@/lib/format'
 import { priced } from '@/lib/bmath'
+import { useProvider } from './provider'
 
 function Balance({ 
   token 
@@ -17,25 +18,45 @@ function Balance({
   const { getBalance } = useBalances({ tokens: TOKENS })
   const balance = useMemo(() => getBalance(token), [getBalance, token])
 
-  if (balance.balance === 0n) return <></>
+  if (balance.amount === 0n) return <></>
 
   return <div className="flex flex-col items-end gap-2 text-xs text-primary-400">
-    <div>{fTokens(balance.balance, balance.decimals)}</div>
-    <div>{fUSD(priced(balance.balance, balance.decimals, balance.price))}</div>
+    <div>{fTokens(balance.amount, balance.decimals)}</div>
+    <div>{fUSD(priced(balance.amount, balance.decimals, balance.price))}</div>
   </div>
 }
 
 export default function SelectToken({
   mode,
-  tokens,
-  onClose,
-  onSelect
+  onClose
 }: {
   mode: 'in' | 'out',
-  tokens: Token[],
-  onClose: () => void,
-  onSelect: (token: Token) => void
-}) {  
+  onClose: () => void
+}) {
+  const { 
+    inputToken, setInputToken, setInputAmount,
+    outputToken, setOutputToken, setOutputAmount,
+  } = useProvider()
+
+  const tokens = useMemo(() => mode === 'in' ? INPUTS : OUTPUTS, [mode])
+
+  const onSelect = useCallback((token: Token) => {
+    if (mode === 'in' && token !== inputToken) {
+      setInputToken(token)
+      setInputAmount(undefined)
+      setOutputAmount(undefined)
+    } else if (mode === 'out' && token !== outputToken) {
+      setOutputToken(token)
+      setInputAmount(undefined)
+      setOutputAmount(undefined)
+    }
+    onClose()
+  }, [
+    mode, onClose, 
+    inputToken, setInputToken, setInputAmount,
+    outputToken, setOutputToken, setOutputAmount
+  ])
+
   return <div className="px-4 py-6 flex flex-col gap-3 bg-primary-900 rounded-primary">
     <div className="flex items-center justify-between">
       <div className="text-sm text-primary-400">Select an {mode === 'in' ? 'input' : 'output'} token</div>

@@ -1,47 +1,37 @@
 'use client'
 
-import { INPUTS, OUTPUTS, Token } from './tokens'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Bolt from './Bolt'
 import Action from './Action'
 import InputPanel from './InputPanel'
 import SelectToken from './SelectToken'
+import Provider from './provider'
+import { useMounted } from '@/hooks/useMounted'
 
-export default function Zap() {
-  const [selectTokensMode, setSelectTokensMode] = useState<'in' | 'out' | undefined>()
-  const [inputToken, setInputToken] = useState<Token>(INPUTS[0])
-  const [outputToken, setOutputToken] = useState<Token>(OUTPUTS[0])
+function Provided() {
+  const [selectTokenMode, setSelectTokenMode] = useState<'in' | 'out' | undefined>()
+  const mounted = useMounted()
 
   return <div className="w-full sm:w-[32rem] p-4 flex flex-col gap-0">
 
     <div className="h-[22.5rem]">
-      {selectTokensMode && <motion.div 
-        key={`select-token-${selectTokensMode}`}
+      {selectTokenMode && <motion.div key={`select-token-${selectTokenMode}`}
         transition={{ duration: 0.1 }}
-        initial={{ y: 10 }}
+        initial={ mounted ? { y: 10 } : false }
         animate={{ y: 0 }}>
-        <SelectToken
-          mode={selectTokensMode}
-          tokens={selectTokensMode === 'in' ? INPUTS : OUTPUTS} 
-          onSelect={token => {
-            if (selectTokensMode === 'in') setInputToken(token)
-            if (selectTokensMode === 'out') setOutputToken(token)
-            setSelectTokensMode(undefined)
-          }} 
-          onClose={() => setSelectTokensMode(undefined)} 
-          />
+        <SelectToken mode={selectTokenMode} onClose={() => setSelectTokenMode(undefined)} />
       </motion.div>}
 
-      {!selectTokensMode && <motion.div key="amount"
+      {!selectTokenMode && <motion.div key="io"
         transition={{ duration: 0.1 }}
-        initial={{ y: 10 }}
+        initial={ mounted ? { y: 10 } : false }
         animate={{ y: 0 }}
         className={`
         relative h-[22rem] flex flex-col gap-2
         bg-transparent rounded-primary`}>
-        <InputPanel mode="in" selected={inputToken} onSelectToken={() => setSelectTokensMode('in')} />
-        <InputPanel mode="out" selected={outputToken} onSelectToken={() => setSelectTokensMode('out')} />
+        <InputPanel mode="in" onSelectToken={() => setSelectTokenMode('in')} />
+        <InputPanel mode="out" onSelectToken={() => setSelectTokenMode('out')} />
         <div className={`
           absolute z-10 inset-0 
           flex items-center justify-center
@@ -53,4 +43,8 @@ export default function Zap() {
 
     <Action className="py-3 w-full" />
   </div>
+}
+
+export default function Zap() {
+  return <Provider><Provided /></Provider>
 }

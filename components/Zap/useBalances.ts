@@ -6,10 +6,10 @@ import { readContractsQueryOptions } from 'wagmi/query'
 import { useAccount, useConfig } from 'wagmi'
 import { erc20Abi, zeroAddress } from 'viem'
 import usePrices from './usePrices'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 
 export type Balance = Token & {
-  balance: bigint
+  amount: bigint
   price: number
 }
 
@@ -35,7 +35,7 @@ export default function useBalances({
     if (!(isConnected && balances.isFetched && prices.isFetched)) return []
     return tokens.map((token, index) => ({
       ...token,
-      balance: (balances.data[index].result ?? 0n) as bigint,
+      amount: (balances.data[index].result ?? 0n) as bigint,
       price: prices.data[token.address] as number
     })) as Balance[]
   }, [tokens, isConnected, balances, prices])
@@ -46,7 +46,7 @@ export default function useBalances({
 
   const getBalance = useCallback((token: Token) => {
     const balance = result?.find(balance => balance.address === token.address)
-    return balance ?? {...token, balance: BigInt(0), price: 0}
+    return balance ?? {...token, amount: BigInt(0), price: 0}
   }, [result])
 
   return { refetch, getBalance }

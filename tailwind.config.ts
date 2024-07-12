@@ -14,7 +14,7 @@ const config = {
   theme: {
     extend: {
       colors: {
-        primary: colors.zinc
+        primary: colors.slate
       },
       borderRadius: {
         primary: Theme.borderRadius.xl
