@@ -47,7 +47,6 @@ export default function SelectToken({
       setOutputAmount(undefined)
     } else if (mode === 'out' && token !== outputToken) {
       setOutputToken(token)
-      setInputAmount(undefined)
       setOutputAmount(undefined)
     }
     onClose()

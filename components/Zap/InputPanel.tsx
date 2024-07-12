@@ -1,11 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { useAccount, useCall } from 'wagmi'
+import { useAccount } from 'wagmi'
 import Button from '../elements/Button'
-import { Token, TOKENS } from './tokens'
+import { TOKENS } from './tokens'
 import { BsChevronDown } from 'react-icons/bs'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 import { cn } from '@/lib/shadcn'
 import useBalances from './useBalances'
 import { fTokens, fUSD } from '@/lib/format'
@@ -82,11 +82,11 @@ export default function InputPanel({
     flex flex-col justify-center gap-3
     border border-transparent focus-within:border-primary-500`}>
     <div className={labelClassName}>
-      {mode === 'in' ? 'Zap in' : 'Zap out'}
+      {mode === 'in' ? 'Zap in' : 'Zap out (min)'}
     </div>
     <div className="flex items-center gap-4">
-      <input disabled={disabled} className={`
-        relative w-full text-4xl font-mono bg-transparent
+      <input disabled={disabled || mode === 'out'} className={`
+        relative w-full text-4xl font-mono bg-transparent truncate
         placeholder:text-primary-500
         disabled:text-primary-400 disabled:bg-transparent hover:disabled:border-primary-950
         disabled:placeholder-primary-800 disabled:border-transparent

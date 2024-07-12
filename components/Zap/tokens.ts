@@ -96,7 +96,7 @@ export const TOKENS_MAP: Record<string, Token> = {
     decimals: 18, 
     icon: `/token/1/0xE9A115b77A1057C918F997c32663FdcE24FB873f/logo-128.png` 
   }
-}
+} as const
 
 export const TOKENS = Object.values(TOKENS_MAP)
 
