@@ -10,7 +10,7 @@ export function useApproveYbsAsInput() {
   const { isConnected, address } = useAccount()
   const { inputToken } = useProvider()
 
-  const approved = useReadContract({
+  const approvedCaller = useReadContract({
     abi: ybsAbi, address: inputToken.address, functionName: 'approvedCaller', 
     args: [address ?? zeroAddress, ZAP],
     query: {
@@ -28,14 +28,14 @@ export function useApproveYbsAsInput() {
   const { write } = useWriteContract()
   const confirmation = useWaitForTransactionReceipt({ hash: write.data })
 
-  return { approved, simulation, write, confirmation }
+  return { approvedCaller, simulation, write, confirmation }
 }
 
 export function useApproveYbsAsOutput() {
   const { isConnected, address } = useAccount()
   const { outputToken } = useProvider()
 
-  const approved = useReadContract({
+  const approvedCaller = useReadContract({
     abi: ybsAbi, address: outputToken.address, functionName: 'approvedCaller', 
     args: [address ?? zeroAddress, ZAP],
     query: {
@@ -53,5 +53,5 @@ export function useApproveYbsAsOutput() {
   const { write } = useWriteContract()
   const confirmation = useWaitForTransactionReceipt({ hash: write.data })
 
-  return { approved, simulation, write, confirmation }
+  return { approvedCaller, simulation, write, confirmation }
 }

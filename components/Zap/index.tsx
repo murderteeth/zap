@@ -11,10 +11,7 @@ import { useMounted } from '@/hooks/useMounted'
 import { useMinOut } from './useMinOut'
 import { formatUnits } from 'viem'
 
-function Provided() {
-  const [selectTokenMode, setSelectTokenMode] = useState<'in' | 'out' | undefined>()
-  const mounted = useMounted()
-
+function useInputAmountEffect() {
   const { expectedOut, minOut } = useMinOut()
   const { inputAmount, outputToken, setOutputAmount } = useProvider()
   useEffect(() => {
@@ -25,6 +22,12 @@ function Provided() {
       setOutputAmount(formatUnits(minOut, outputToken.decimals))
     }
   }, [expectedOut, minOut, setOutputAmount, inputAmount, outputToken])
+}
+
+function Provided() {
+  useInputAmountEffect()
+  const [selectTokenMode, setSelectTokenMode] = useState<'in' | 'out' | undefined>()
+  const mounted = useMounted()
 
   return <div className="w-full sm:w-[32rem] p-4 flex flex-col gap-0">
 

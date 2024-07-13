@@ -53,9 +53,9 @@ export function Action({
   const { refetch: refetchBalances } = useBalances({ tokens: TOKENS })
 
   const needsApproval = useMemo(() => {
-    if (inputIsYbs && !approveYbsAsInput.approved) return true
+    if (inputIsYbs && approveYbsAsInput.approvedCaller.data !== 3) return true
     if (!inputIsYbs && ((approveErc20.allowance.data ?? 0n) < inputAmountExpanded)) return true
-    if (outputIsYbs && !approveYbsAsOutput.approved) return true
+    if (outputIsYbs && approveYbsAsOutput.approvedCaller.data !== 3) return true
     return false
   }, [
     inputAmountExpanded, 
@@ -65,19 +65,34 @@ export function Action({
 
   const zap = useZap({ needsApproval })
 
+  const isVerifying = useMemo(() => {
+    return approveErc20.write.isPending 
+    || approveYbsAsInput.write.isPending 
+    || approveYbsAsOutput.write.isPending
+    || zap.write.isPending
+  }, [approveErc20, approveYbsAsInput, approveYbsAsOutput, zap])
+
+  const isConfirming = useMemo(() => {
+    return approveErc20.confirmation.isFetching
+    || approveYbsAsInput.confirmation.isFetching
+    || approveYbsAsOutput.confirmation.isFetching
+    || zap.confirmation.isFetching
+  }, [approveErc20, approveYbsAsInput, approveYbsAsOutput, zap])
+
   const disabled = useMemo(() => {
     if (!isConnected) return false
+    if (isVerifying || isConfirming) return true
     if (!inputAmount || !outputAmount) return true
     if (insufficientBalance) return true
     if (inputIsYbs && !approveYbsAsInput.simulation.isSuccess) return true
     if (!inputIsYbs && !approveErc20.simulation.isSuccess) return true
     if (outputIsYbs && !approveYbsAsOutput.simulation.isSuccess) return true
-    if (!zap.simulation.isSuccess) return true
+    if (!(needsApproval || zap.simulation.isSuccess)) return true
     return false
   }, [
-    isConnected, inputAmount, outputAmount, insufficientBalance,
-    inputIsYbs, outputIsYbs,
-    approveErc20, approveYbsAsInput, approveYbsAsOutput,
+    isConnected, isVerifying, isConfirming,
+    inputAmount, outputAmount, insufficientBalance, inputIsYbs, outputIsYbs,
+    approveErc20, approveYbsAsInput, approveYbsAsOutput, needsApproval,
     zap
   ])
 
@@ -85,40 +100,43 @@ export function Action({
     if (!isConnected) return 'Connect'
     if (!inputAmount || !outputAmount) return 'Enter zap amounts'
     if (insufficientBalance) return 'Insufficient funds'
+    if (isConfirming) return 'Confirming...'
     if (needsApproval) return 'Approve'
     return 'Zap!'
   }, [
-    isConnected, 
+    isConnected, isConfirming,
     inputAmount, outputAmount, 
     insufficientBalance,
     needsApproval
   ])
 
-  const reset = useCallback(() => {
+  const reset = useCallback((resetAmounts: boolean) => {
     approveErc20.write.reset()
     approveYbsAsInput.write.reset()
     approveYbsAsOutput.write.reset()
     zap.write.reset()
 
     approveErc20.allowance.refetch()
-    approveYbsAsInput.approved.refetch()
-    approveYbsAsOutput.approved.refetch()
+    approveYbsAsInput.approvedCaller.refetch()
+    approveYbsAsOutput.approvedCaller.refetch()
 
     refetchBalances()
-    setInputAmount(undefined)
-    setOutputAmount(undefined)
 
+    if (resetAmounts) {
+      setInputAmount(undefined)
+      setOutputAmount(undefined)
+    }
   }, [
     approveErc20, approveYbsAsInput, approveYbsAsOutput, zap, 
     refetchBalances, setInputAmount, setOutputAmount
   ])
 
   const approve = useCallback(() => {
-    if (inputIsYbs && !approveYbsAsInput.approved) {
+    if (inputIsYbs && approveYbsAsInput.approvedCaller.data !== 3) {
       approveYbsAsInput.write.writeContract(approveYbsAsInput.simulation.data!.request)
     } else if (!inputIsYbs && ((approveErc20.allowance.data ?? 0n) < inputAmountExpanded)) {
       approveErc20.write.writeContract(approveErc20.simulation.data!.request)
-    } else if (outputIsYbs && !approveYbsAsOutput.approved) {
+    } else if (outputIsYbs && approveYbsAsOutput.approvedCaller.data !== 3) {
       approveYbsAsOutput.write.writeContract(approveYbsAsOutput.simulation.data!.request)
     }
   }, [
@@ -127,17 +145,12 @@ export function Action({
   ])
 
   useEffect(() => {
-    if (
-      approveErc20.write.isPending 
-      || approveYbsAsInput.write.isPending 
-      || approveYbsAsOutput.write.isPending
-      || zap.write.isPending
-    ) {
+    if (isVerifying || isConfirming) {
       setTheme('onit')
     } else {
       setTheme(undefined)
     }
-  }, [setTheme, approveErc20, approveYbsAsInput, approveYbsAsOutput, zap])
+  }, [setTheme, isVerifying, isConfirming])
 
   useEffect(() => {
     if (
@@ -146,7 +159,7 @@ export function Action({
       || approveYbsAsOutput.confirmation.isSuccess
       || zap.confirmation.isSuccess
     ) {
-      reset()
+      reset(zap.confirmation.isSuccess)
     }
   }, [reset, approveErc20, approveYbsAsInput, approveYbsAsOutput, zap])
 
@@ -160,5 +173,11 @@ export function Action({
     }
   }, [isConnected, openConnectModal, needsApproval, approve, zap])
 
-  return <ActionDisplay disabled={disabled} onClick={onClick} className={className} theme={theme}>{label}</ActionDisplay>
+  return <ActionDisplay 
+    onClick={onClick} 
+    disabled={disabled} 
+    className={className} 
+    theme={theme}>
+    {label}
+  </ActionDisplay>
 }
