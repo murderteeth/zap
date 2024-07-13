@@ -74,6 +74,7 @@ export default function SelectToken({
         rounded-primary cursor-pointer`}>
         <div className="flex items-center gap-4">
           <Image
+            className="rounded-full bg-primary-600"
             src={token.icon}
             alt={token.symbol}
             width={32}

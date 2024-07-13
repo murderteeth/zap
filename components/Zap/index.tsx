@@ -1,17 +1,30 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Bolt from './Bolt'
 import Action from './Action'
 import InputPanel from './InputPanel'
 import SelectToken from './SelectToken'
-import Provider from './provider'
+import Provider, { useProvider } from './provider'
 import { useMounted } from '@/hooks/useMounted'
+import { useMinOut } from './useMinOut'
+import { formatUnits } from 'viem'
 
 function Provided() {
   const [selectTokenMode, setSelectTokenMode] = useState<'in' | 'out' | undefined>()
   const mounted = useMounted()
+
+  const { expectedOut, minOut } = useMinOut()
+  const { inputAmount, outputToken, setOutputAmount } = useProvider()
+  useEffect(() => {
+    if (expectedOut.isFetching) return
+    if (minOut === undefined || (inputAmount?.length ?? 0) === 0) {
+      setOutputAmount(undefined)
+    } else {
+      setOutputAmount(formatUnits(minOut, outputToken.decimals))
+    }
+  }, [expectedOut, minOut, setOutputAmount, inputAmount, outputToken])
 
   return <div className="w-full sm:w-[32rem] p-4 flex flex-col gap-0">
 
