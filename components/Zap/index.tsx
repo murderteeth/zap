@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import Bolt from './Bolt'
-import Action from './Action'
+import { Action, ActionDisplay } from './Action'
 import InputPanel from './InputPanel'
 import SelectToken from './SelectToken'
 import Provider, { useProvider } from './provider'
@@ -54,7 +54,9 @@ function Provided() {
       </motion.div>}
     </div>
 
-    <Action className="py-3 w-full" />
+    <Suspense fallback={<ActionDisplay disabled={true} className="py-3 w-full" />}>
+      <Action className="py-3 w-full" />
+    </Suspense>
   </div>
 }
 

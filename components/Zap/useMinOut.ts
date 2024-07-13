@@ -1,13 +1,11 @@
 import { useMemo } from 'react'
 import { useProvider } from './provider'
 import { useReadContract } from 'wagmi'
-import zapAbi from './zapAbi'
+import zapAbi from './abis/zap'
 import { parseUnits } from 'viem'
 import { compareEvmAddresses, ONE_TO_ONES, TOKENS_MAP } from './tokens'
 import bmath from '@/lib/bmath'
-
-const ZAP = '0x5271058928d31b6204fc95eee15fe9fbbdca681a'
-const FIXED_SLIPPAGE = 0.0003
+import { FIXED_SLIPPAGE, ZAP } from './constants'
 
 export function useMinOut() {
   const { inputToken, inputAmount, outputToken } = useProvider()

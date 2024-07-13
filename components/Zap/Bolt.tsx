@@ -1,12 +1,10 @@
 import { cn } from '@/lib/shadcn'
 import { useMemo } from 'react'
 import { BsFillLightningFill } from 'react-icons/bs'
+import { useProvider } from './provider'
 
-export default function Bolt({
-  theme
-}: {
-  theme?: 'default' | 'onit'
-}) {
+export default function Bolt() {
+  const { theme } = useProvider()
 
   const bg = useMemo(() => {
     if (theme === 'onit') return 'rainbow-no-bg'

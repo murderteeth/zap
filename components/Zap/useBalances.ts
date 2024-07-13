@@ -18,7 +18,7 @@ export default function useBalances({
 }: {
   tokens: Token[]
 }) {
-  const { isConnected, chainId, address } = useAccount()
+  const { isConnected, address } = useAccount()
   const config = useConfig()
 
   const contracts = useMemo(() => tokens.map(token => ({

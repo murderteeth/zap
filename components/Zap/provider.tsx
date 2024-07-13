@@ -18,7 +18,11 @@ const ContextSchema = z.object({
   outputToken: TokenSchema,
   setOutputToken: setTokenSchema.default(() => {}),
   outputAmount: z.string().optional(),
-  setOutputAmount: setStringSchema.default(() => {})
+  setOutputAmount: setStringSchema.default(() => {}),
+  theme: z.enum(['default', 'transparent', 'onit']).optional(),
+  setTheme: z.function()
+  .args(z.enum(['default', 'transparent', 'onit']).optional().or(z.function().args(z.enum(['default', 'transparent', 'onit']).optional()).returns(z.enum(['default', 'transparent', 'onit']).optional())))
+  .returns(z.void())
 })
 
 type Context = z.infer<typeof ContextSchema>
@@ -31,7 +35,9 @@ export const context = createContext<Context>(ContextSchema.parse({
   outputToken: OUTPUTS[0],
   setOutputToken: () => {},
   outputAmount: undefined,
-  setOutputAmount: () => {}
+  setOutputAmount: () => {},
+  theme: undefined,
+  setTheme: () => {}
 }))
 
 export const useProvider = () => useContext(context)
@@ -41,15 +47,13 @@ export default function Provider({ children }: { children: ReactNode }) {
   const [inputAmount, setInputAmount] = useState<string | undefined>()
   const [outputToken, setOutputToken] = useState<Token>(OUTPUTS[0])
   const [outputAmount, setOutputAmount] = useState<string | undefined>()
+  const [theme, setTheme] = useState<'default' | 'transparent' | 'onit' | undefined>(undefined)
   return <context.Provider value={{
-    inputToken,
-    setInputToken,
-    inputAmount,
-    setInputAmount,
-    outputToken,
-    setOutputToken,
-    outputAmount,
-    setOutputAmount
+    inputToken, setInputToken,
+    inputAmount, setInputAmount,
+    outputToken, setOutputToken,
+    outputAmount, setOutputAmount,
+    theme, setTheme
   }}>
     {children}
   </context.Provider>
