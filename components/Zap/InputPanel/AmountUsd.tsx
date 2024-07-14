@@ -21,5 +21,5 @@ export function AmountUsd({ amount, token }: { amount: string | undefined, token
     return priced(expansion, balance.decimals, balance.price)
   }, [amount, balance, token])
 
-  return <AmountUsdDisplay>{fUSD(amountUsd)}</AmountUsdDisplay>
+  return <AmountUsdDisplay>{balance.price ? fUSD(amountUsd) : 'price na'}</AmountUsdDisplay>
 }

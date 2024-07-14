@@ -22,7 +22,7 @@ function Balance({
 
   return <div className="flex flex-col items-end gap-2 text-xs text-primary-400">
     <div>{fTokens(balance.amount, balance.decimals)}</div>
-    <div>{fUSD(priced(balance.amount, balance.decimals, balance.price))}</div>
+    <div>{balance.price ? fUSD(priced(balance.amount, balance.decimals, balance.price)) : 'price na'}</div>
   </div>
 }
 

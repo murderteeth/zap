@@ -9,6 +9,7 @@ import { useContracts } from './contracts'
 import { fEvmAddress } from '@/lib/format'
 import { useConfig } from 'wagmi'
 import A from '../elements/A'
+import { useProvider } from './provider'
 
 function makeNotificationWithExplorerLink({ 
   key, message, hash, explorerUrl 
@@ -18,7 +19,7 @@ function makeNotificationWithExplorerLink({
   const explorer = `${explorerUrl}/tx/${hash}`
   return {
     key, jsx: <div className="flex items-center gap-3">
-      {message}
+      {`${message},`}
       <A href={explorer} target="_blank" rel="noreferrer">{fEvmAddress(hash)}</A>
     </div>
   }
@@ -28,6 +29,17 @@ export default function Notification({ className }: { className?: string }) {
   const mounted = useMounted()
   const config = useConfig()
   const explorerUrl = useMemo(() => config.getClient().chain.blockExplorers?.default.url ?? '', [config])
+
+  const {
+    inputToken, inputAmount,
+    outputToken, outputAmount
+  } = useProvider()
+
+  const zapped = useMemo(() => {
+    const amountIn = parseFloat(inputAmount ?? '0').toFixed(2)
+    const amountOut = parseFloat(outputAmount ?? '0').toFixed(2)
+    return `Zapped ${amountIn} ${inputToken.symbol} → ${amountOut} ${outputToken.symbol}`
+  }, [inputToken, inputAmount, outputToken, outputAmount])
 
   const {
     approveErc20, approveYbsAsInput, approveYbsAsOutput,
@@ -43,7 +55,7 @@ export default function Notification({ className }: { className?: string }) {
     } else if (approveErc20.confirmation.isFetching) {
       setNotification(makeNotificationWithExplorerLink({ 
         key: 'confirm-approve-erc20', 
-        message: 'Confirming approval...', 
+        message: 'Confirming approval', 
         hash: approveErc20.write.data!,
         explorerUrl
       } ))
@@ -51,7 +63,7 @@ export default function Notification({ className }: { className?: string }) {
     } else if (approveYbsAsInput.confirmation.isFetching) {
       setNotification(makeNotificationWithExplorerLink({ 
         key: 'confirm-approve-ybs-as-input', 
-        message: 'Confirming approval...', 
+        message: 'Confirming approval', 
         hash: approveYbsAsInput.write.data!,
         explorerUrl
       } ))
@@ -59,7 +71,7 @@ export default function Notification({ className }: { className?: string }) {
     } else if (approveYbsAsOutput.confirmation.isFetching) {
       setNotification(makeNotificationWithExplorerLink({ 
         key: 'confirm-approve-ybs-as-output', 
-        message: 'Confirming approval...', 
+        message: 'Confirming approval', 
         hash: approveYbsAsOutput.write.data!,
         explorerUrl
       } ))
@@ -67,7 +79,7 @@ export default function Notification({ className }: { className?: string }) {
     } else if (zap.confirmation.isFetching) {
       setNotification(makeNotificationWithExplorerLink({ 
         key: 'confirm-zap', 
-        message: 'Confirming zap...', 
+        message: 'Confirming zap', 
         hash: zap.write.data!,
         explorerUrl
       } ))
@@ -75,7 +87,7 @@ export default function Notification({ className }: { className?: string }) {
     } else if (approveErc20.confirmation.isSuccess) {
       setNotification(makeNotificationWithExplorerLink({ 
         key: 'ok-approve-erc20', 
-        message: 'Approved!', 
+        message: 'Approved', 
         hash: approveErc20.write.data!,
         explorerUrl
       } ))
@@ -83,7 +95,7 @@ export default function Notification({ className }: { className?: string }) {
     } else if (approveYbsAsInput.confirmation.isSuccess) {
       setNotification(makeNotificationWithExplorerLink({ 
         key: 'ok-approve-ybs-as-input', 
-        message: 'Approved!', 
+        message: 'Approved', 
         hash: approveYbsAsInput.write.data!,
         explorerUrl
       } ))
@@ -91,15 +103,15 @@ export default function Notification({ className }: { className?: string }) {
     } else if (approveYbsAsOutput.confirmation.isSuccess) {
       setNotification(makeNotificationWithExplorerLink({ 
         key: 'ok-approve-ybs-as-output', 
-        message: 'Approved!', 
+        message: 'Approved', 
         hash: approveYbsAsOutput.write.data!,
         explorerUrl
       } ))
 
     } else if (zap.confirmation.isSuccess) {
-      setNotification(makeNotificationWithExplorerLink({ 
+      setNotification(makeNotificationWithExplorerLink({
         key: 'ok-zap', 
-        message: 'Zapped!', 
+        message: zapped, 
         hash: zap.write.data!,
         explorerUrl
       } ))
@@ -108,7 +120,7 @@ export default function Notification({ className }: { className?: string }) {
   }, [
     setNotification, explorerUrl, 
     approveErc20, approveYbsAsInput, approveYbsAsOutput,
-    zap, needsApproval, isVerifying, isConfirming
+    zap, needsApproval, isVerifying, isConfirming, zapped
   ])
 
   return <div className={cn(`
