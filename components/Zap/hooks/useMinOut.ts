@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
-import { useProvider } from './provider'
+import { useProvider } from '../provider'
 import { useReadContract } from 'wagmi'
-import zapAbi from './abis/zap'
+import zapAbi from '../abis/zap'
 import { parseUnits } from 'viem'
-import { compareEvmAddresses, ONE_TO_ONES, TOKENS_MAP } from './tokens'
+import { compareEvmAddresses, ONE_TO_ONES, TOKENS_MAP } from '../tokens'
 import bmath from '@/lib/bmath'
-import { FIXED_SLIPPAGE, ZAP } from './constants'
+import { DEFAULT_SLIPPAGE, ZAP } from '../constants'
 
 export function useMinOut() {
   const { inputToken, inputAmount, outputToken } = useProvider()
@@ -34,10 +34,10 @@ export function useMinOut() {
     if (isOneToOne) return expectedOut.data
 
     if (compareEvmAddresses(outputToken.address, TOKENS_MAP['YBS'].address )) {
-      return bmath.mul((1 - FIXED_SLIPPAGE), expectedOut.data!) - 1n
+      return bmath.mul((1 - DEFAULT_SLIPPAGE), expectedOut.data!) - 1n
     }
 
-    return bmath.mul((1 - FIXED_SLIPPAGE), expectedOut.data!)
+    return bmath.mul((1 - DEFAULT_SLIPPAGE), expectedOut.data!)
   }, [expectedOut, inputToken, outputToken])
 
   return { expectedOut, minOut }

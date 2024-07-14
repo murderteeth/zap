@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useProvider } from './provider'
+import { useProvider } from '../provider'
 import { useMinOut } from './useMinOut'
 import { formatUnits } from 'viem'
 

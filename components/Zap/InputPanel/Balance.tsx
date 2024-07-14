@@ -2,7 +2,7 @@
 
 import { ReactNode, useMemo } from 'react'
 import { Token, TOKENS } from '../tokens'
-import useBalances from '../useBalances'
+import useBalances from '../hooks/useBalances'
 import { fTokens } from '@/lib/format'
 
 export function BalanceDisplay({ children }: { children?: ReactNode }) {

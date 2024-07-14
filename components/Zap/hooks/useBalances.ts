@@ -1,7 +1,7 @@
 'use client'
 
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { Token } from './tokens'
+import { Token } from '../tokens'
 import { readContractsQueryOptions } from 'wagmi/query'
 import { useAccount, useConfig } from 'wagmi'
 import { erc20Abi, zeroAddress } from 'viem'

@@ -1,7 +1,7 @@
 'use client'
 
 import Button from '@/components/elements/Button'
-import useBalances from '../useBalances'
+import useBalances from '../hooks/useBalances'
 import { Token, TOKENS } from '../tokens'
 import { useCallback, useMemo } from 'react'
 import { formatUnits } from 'viem'

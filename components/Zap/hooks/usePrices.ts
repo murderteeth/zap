@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { Token } from './tokens'
+import { Token } from '../tokens'
 
 export default function usePrices({
   tokens

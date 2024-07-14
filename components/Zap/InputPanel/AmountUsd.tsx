@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode, useMemo } from 'react'
-import useBalances from '../useBalances'
+import useBalances from '../hooks/useBalances'
 import { Token, TOKENS } from '../tokens'
 import { priced } from '@/lib/bmath'
 import { fUSD } from '@/lib/format'

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import { useProvider } from './provider'
-import { TOKENS } from './tokens'
+import { useProvider } from '../provider'
+import { TOKENS } from '../tokens'
 import useBalances from './useBalances'
 import { parseUnits } from 'viem'
 

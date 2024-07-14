@@ -12,7 +12,7 @@ import Notification from './Notification'
 import { springs } from '@/lib/motion'
 import Contracts from './contracts'
 
-function _Zap() {
+function Layout() {
   const [selectTokenMode, setSelectTokenMode] = useState<'in' | 'out' | undefined>()
   const mounted = useMounted()
 
@@ -48,14 +48,14 @@ function _Zap() {
       <Action className="py-3 w-full" />
     </Suspense>
 
-    <Notification className="h-16 px-3" />
+    <Notification className="h-16 px-2" />
   </div>
 }
 
 export default function Zap() {
   return <Provider>
     <Contracts>
-      <_Zap />
+      <Layout />
     </Contracts>
   </Provider>
 }

@@ -1,13 +1,12 @@
 import { createContext, ReactNode, useContext, useMemo } from 'react'
-import { compareEvmAddresses, TOKENS_MAP } from './tokens'
-import { erc20Abi, parseUnits } from 'viem'
-import { useApproveErc20 } from './useApproveErc20'
-import { useApproveYbsAsInput, useApproveYbsAsOutput } from './useApproveYbs'
-import { useZap } from './useZap'
+import { erc20Abi } from 'viem'
+import { useApproveErc20 } from './hooks/useApproveErc20'
+import { useApproveYbsAsInput, useApproveYbsAsOutput } from './hooks/useApproveYbs'
+import { useZap } from './hooks/useZap'
 import { UseReadContractReturnType, UseSimulateContractReturnType, UseWaitForTransactionReceiptReturnType, UseWriteContractReturnType } from 'wagmi'
 import ybsAbi from './abis/ybs'
 import { useProvider } from './provider'
-import { useInputAmountEffect } from './useInputAmountEffect'
+import { useInputAmountEffect } from './hooks/useInputAmountEffect'
 
 interface Context {
   inputAmountExpanded: bigint
@@ -66,12 +65,8 @@ export default function Contracts({ children }: { children: ReactNode }) {
   useInputAmountEffect()
 
   const { 
-    inputToken, inputAmount, outputToken
+    inputAmountExpanded, inputIsYbs, outputIsYbs
   } = useProvider()
-
-  const inputAmountExpanded = useMemo(() => parseUnits(inputAmount ?? '0', inputToken.decimals), [inputAmount, inputToken])
-  const inputIsYbs = useMemo(() => compareEvmAddresses(inputToken.address, TOKENS_MAP['YBS'].address), [inputToken])
-  const outputIsYbs = useMemo(() => compareEvmAddresses(outputToken.address, TOKENS_MAP['YBS'].address), [outputToken])
 
   const approveErc20 = useApproveErc20()
   const approveYbsAsInput = useApproveYbsAsInput()
