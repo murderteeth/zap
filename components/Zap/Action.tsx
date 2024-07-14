@@ -1,20 +1,21 @@
 'use client'
 
 import { useAccount } from 'wagmi'
-import Button from '../../elements/Button'
+import Button from '../elements/Button'
 import { ReactNode, useCallback, useEffect, useMemo } from 'react'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { useProvider } from '../provider'
+import { useProvider } from './provider'
 import { useInsufficientFunds } from './useInsufficientFunds'
+import { compareEvmAddresses, TOKENS, TOKENS_MAP } from './tokens'
+import useBalances from './useBalances'
+import { parseUnits } from 'viem'
 import { useApproveErc20 } from './useApproveErc20'
 import { useApproveYbsAsInput, useApproveYbsAsOutput } from './useApproveYbs'
-import { compareEvmAddresses, TOKENS, TOKENS_MAP } from '../tokens'
-import { parseUnits } from 'viem'
 import { useZap } from './useZap'
-import useBalances from '../useBalances'
+import { useContracts } from './contracts'
 
-export function ActionDisplay({ 
-  onClick, 
+export function ActionDisplay({
+  onClick,
   disabled,
   className,
   theme,
@@ -38,46 +39,19 @@ export function Action({
   const { isConnected } = useAccount()
 
   const { 
-    inputAmount, inputToken, setInputAmount,
-    outputAmount, outputToken, setOutputAmount,
-    theme, setTheme 
+    inputAmount, setInputAmount,
+    outputAmount, setOutputAmount,
+    theme, setTheme
   } = useProvider()
 
-  const inputAmountExpanded = useMemo(() => parseUnits(inputAmount ?? '0', inputToken.decimals), [inputAmount, inputToken])
-  const insufficientBalance = useInsufficientFunds()
-  const inputIsYbs = useMemo(() => compareEvmAddresses(inputToken.address, TOKENS_MAP['YBS'].address), [inputToken])
-  const outputIsYbs = useMemo(() => compareEvmAddresses(outputToken.address, TOKENS_MAP['YBS'].address), [outputToken])
-  const approveErc20 = useApproveErc20()
-  const approveYbsAsInput = useApproveYbsAsInput()
-  const approveYbsAsOutput = useApproveYbsAsOutput()
+  const {
+    inputAmountExpanded, inputIsYbs, outputIsYbs,
+    approveErc20, approveYbsAsInput, approveYbsAsOutput,
+    needsApproval, zap, isVerifying, isConfirming
+  } = useContracts()
+
   const { refetch: refetchBalances } = useBalances({ tokens: TOKENS })
-
-  const needsApproval = useMemo(() => {
-    if (inputIsYbs && approveYbsAsInput.approvedCaller.data !== 3) return true
-    if (!inputIsYbs && ((approveErc20.allowance.data ?? 0n) < inputAmountExpanded)) return true
-    if (outputIsYbs && approveYbsAsOutput.approvedCaller.data !== 3) return true
-    return false
-  }, [
-    inputAmountExpanded, 
-    inputIsYbs, outputIsYbs,
-    approveErc20, approveYbsAsInput, approveYbsAsOutput
-  ])
-
-  const zap = useZap({ needsApproval })
-
-  const isVerifying = useMemo(() => {
-    return approveErc20.write.isPending 
-    || approveYbsAsInput.write.isPending 
-    || approveYbsAsOutput.write.isPending
-    || zap.write.isPending
-  }, [approveErc20, approveYbsAsInput, approveYbsAsOutput, zap])
-
-  const isConfirming = useMemo(() => {
-    return approveErc20.confirmation.isFetching
-    || approveYbsAsInput.confirmation.isFetching
-    || approveYbsAsOutput.confirmation.isFetching
-    || zap.confirmation.isFetching
-  }, [approveErc20, approveYbsAsInput, approveYbsAsOutput, zap])
+  const insufficientBalance = useInsufficientFunds()
 
   const disabled = useMemo(() => {
     if (!isConnected) return false
@@ -98,7 +72,7 @@ export function Action({
 
   const label = useMemo(() => {
     if (!isConnected) return 'Connect'
-    if (!inputAmount || !outputAmount) return 'Enter zap amounts'
+    if (!inputAmount || !outputAmount) return 'Enter zap amount'
     if (insufficientBalance) return 'Insufficient funds'
     if (isConfirming) return 'Confirming...'
     if (needsApproval) return 'Approve'

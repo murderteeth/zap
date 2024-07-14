@@ -1,11 +1,11 @@
 import { useAccount, useSimulateContract, UseSimulateContractParameters, useWaitForTransactionReceipt } from 'wagmi'
-import { useProvider } from '../provider'
-import { ZAP } from '../constants'
+import { useProvider } from './provider'
+import { ZAP } from './constants'
 import { useMemo } from 'react'
-import { useWriteContract } from '../useWriteContract'
-import zapAbi from '../abis/zap'
+import { useWriteContract } from './useWriteContract'
+import zapAbi from './abis/zap'
 import { parseUnits } from 'viem'
-import { useMinOut } from '../useMinOut'
+import { useMinOut } from './useMinOut'
 
 export function useZap({ needsApproval }: { needsApproval: boolean }) {
   const { isConnected } = useAccount()

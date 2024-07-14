@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { useProvider } from '../provider'
-import { TOKENS } from '../tokens'
-import useBalances from '../useBalances'
+import { useProvider } from './provider'
+import { TOKENS } from './tokens'
+import useBalances from './useBalances'
 import { parseUnits } from 'viem'
 
 export function useInsufficientFunds() {

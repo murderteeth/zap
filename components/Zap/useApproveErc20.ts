@@ -1,9 +1,9 @@
-import { useAccount, useReadContract, useSimulateContract, UseSimulateContractParameters, useWaitForTransactionReceipt } from 'wagmi'
-import { useProvider } from '../provider'
+import { useAccount, useReadContract, useSimulateContract, UseSimulateContractParameters, UseSimulateContractReturnType, useWaitForTransactionReceipt } from 'wagmi'
+import { useProvider } from './provider'
 import { erc20Abi, maxUint256, zeroAddress } from 'viem'
-import { ZAP } from '../constants'
+import { ZAP } from './constants'
 import { useMemo } from 'react'
-import { useWriteContract } from '../useWriteContract'
+import { useWriteContract } from './useWriteContract'
 
 export function useApproveErc20() {
   const { isConnected, address } = useAccount()

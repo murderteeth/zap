@@ -1,10 +1,10 @@
 import { useAccount, useReadContract, useSimulateContract, UseSimulateContractParameters, useWaitForTransactionReceipt } from 'wagmi'
-import { useProvider } from '../provider'
+import { useProvider } from './provider'
 import { zeroAddress } from 'viem'
-import { ZAP } from '../constants'
-import ybsAbi from '../abis/ybs'
+import { ZAP } from './constants'
+import ybsAbi from './abis/ybs'
 import { useMemo } from 'react'
-import { useWriteContract } from '../useWriteContract'
+import { useWriteContract } from './useWriteContract'
 
 export function useApproveYbsAsInput() {
   const { isConnected, address } = useAccount()

@@ -13,6 +13,10 @@ export function fUSD(amount: number, options?: { fixed?: number }) {
   return formatter.format(amount)
 }
 
+export function fEvmAddress(address: string) {
+  return `${address.slice(0, 6)}...${address.slice(-4)}`
+}
+
 export function fTokens(amount: bigint, decimals: number, options?: { accuracy?: number, locale?: string }) {
   const { accuracy = 2, locale } = options || {}
   const units = formatUnits(amount, decimals)
